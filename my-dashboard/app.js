@@ -47,5 +47,29 @@ const renderCards = (data) => {
   });
 };
 
+const renderBarChart = (data) => {
+  const map = {};
+  data.rooms.forEach(r => {
+    if (!map[r.building]) map[r.building] = { seats: 0, occupied: 0 };
+    map[r.building].seats += r.seats;
+    map[r.building].occupied += r.occupied;
+  });
+  const buildings = Object.keys(map);
+
+  if (barChart === null) {
+    barChart = echarts.init(document.querySelector('#bar-chart'));
+  }
+  barChart.setOption({
+    title: { text: '各楼宇座位数与占用数', left: 'center' },
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 0 },
+    xAxis: { data: buildings },
+    yAxis: { name: '个' },
+    series: [
+      { name: '总座位数', type: 'bar', data: buildings.map(b => map[b].seats) },
+      { name: '已占用数', type: 'bar', data: buildings.map(b => map[b].occupied) }
+    ]
+  });
+};
 
 loadData();
