@@ -72,4 +72,41 @@ const renderBarChart = (data) => {
   });
 };
 
+const renderLineChart = (data) => {
+  const labels = data.rooms.map(r => r.name);
+  const rates = data.rooms.map(r => r.seats > 0 ? Math.round(r.occupied / r.seats * 100) : 0);
+
+  if (lineChart !== null) lineChart.destroy();
+  const ctx = document.querySelector('#line-chart');
+  lineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [{
+        label: '座位占用率(%)',
+        data: rates,
+        borderColor: '#0d6efd',
+        backgroundColor: 'rgba(13, 110, 253, 0.1)',
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        y: { beginAtZero: true, max: 100, title: { display: true, text: '占用率(%)' } }
+      },
+      plugins: {
+        title: { display: true, text: '各自习室座位占用率' },
+        legend: { display: false }
+      }
+    }
+  });
+};
+
+window.addEventListener('resize', () => {
+  if (barChart) barChart.resize();
+});
+
 loadData();
