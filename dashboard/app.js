@@ -1,9 +1,9 @@
 const state = { data: null };
-
+let barChart=null;
 const loadData = async () => {
   $('#status').text('加载中...').show();
   try {
-    const response = await fetch('data/books.json');
+    const response = await fetch('data.json');
     if (!response.ok) {
       throw new Error('HTTP ' + response.status);
     }
@@ -40,4 +40,22 @@ const renderCards = (data) => {
     `);
   });
 };
+const renderBarChart = (data) => {
+  if (barChart === null) {
+    barChart = echarts.init(document.querySelector('#bar-chart'));
+  }
+  barChart.setOption({
+    title: { text: '各月各品类借阅量', left: 'center' },
+    tooltip: { trigger: 'axis' },
+    legend: { bottom: 0 },
+    xAxis: { data: data.months },
+    yAxis: { name: '册' },
+    series: data.series.map(s => ({
+      name: s.category,
+      type: 'bar',
+      data: s.counts
+    }))
+  });
+};
+
 loadData();
